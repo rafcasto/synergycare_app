@@ -1,12 +1,4 @@
-import {
-  BRAND_THESIS,
-  FAQS,
-  HOW_WE_WORK,
-  PROBLEMS,
-  STEPS,
-  STEPS_NOTE,
-  TIERS,
-} from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { Badge, Card, CtaButton, Section, SectionTitle } from "@/components/ui";
 import Analytics from "@/components/Analytics";
 import Reveal from "@/components/Reveal";
@@ -15,19 +7,25 @@ import EoiForm from "@/components/EoiForm";
 
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "rafael@digitalpathways.io";
 
-export default function Page() {
+// Regenerated on demand whenever the CMS saves, with a slow ceiling as a
+// backstop so a missed revalidation can never strand stale copy for long.
+export const revalidate = 300;
+
+export default async function Page() {
+  const c = await getSiteContent();
+
   return (
     <>
       <Analytics />
-      <Hero />
+      <Hero hero={c.hero} image={c.heroImage} />
 
       {/* --- Problem ------------------------------------------------------ */}
       <Section tone="white">
-        <SectionTitle>Sounds familiar?</SectionTitle>
+        <SectionTitle>{c.problem.title}</SectionTitle>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {PROBLEMS.map((problem, index) => (
-            <Reveal key={problem.title} delay={index * 80}>
+          {c.problem.cards.map((problem, index) => (
+            <Reveal key={`${problem.title}-${index}`} delay={index * 80}>
               <Card className="h-full">
                 <h3 className="t-h3 text-ink">{problem.title}</h3>
                 <p className="t-body mt-3 text-gray-600">{problem.body}</p>
@@ -37,17 +35,17 @@ export default function Page() {
         </div>
 
         <p className="t-h3 mt-10 max-w-[24ch]" style={{ color: "var(--color-teal-700)" }}>
-          {BRAND_THESIS}
+          {c.problem.thesis}
         </p>
       </Section>
 
       {/* --- How it works ------------------------------------------------- */}
       <Section tone="teal">
-        <SectionTitle>How it works</SectionTitle>
+        <SectionTitle>{c.how.title}</SectionTitle>
 
         <ol className="mt-8 grid gap-6 md:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <li key={step.title}>
+          {c.how.steps.map((step, index) => (
+            <li key={`${step.title}-${index}`}>
               <Reveal delay={index * 80}>
                 <span
                   className="flex h-10 w-10 items-center justify-center rounded-full text-[16px] font-semibold text-white"
@@ -63,27 +61,22 @@ export default function Page() {
           ))}
         </ol>
 
-        <p className="t-small mt-8 max-w-[65ch] text-gray-600">{STEPS_NOTE}</p>
+        <p className="t-small mt-8 max-w-[65ch] text-gray-600">{c.how.note}</p>
       </Section>
 
       {/* --- What's included ---------------------------------------------- */}
       <Section tone="sampaguita">
-        <SectionTitle>What membership will include</SectionTitle>
-        <p className="t-body mt-3 max-w-[65ch] text-gray-600">
-          SynergyCare is pre-launch. This is what we&rsquo;re building, shaped with
-          our first founding families.
-        </p>
+        <SectionTitle>{c.tiers.title}</SectionTitle>
+        <p className="t-body mt-3 max-w-[65ch] text-gray-600">{c.tiers.intro}</p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {TIERS.map((tier) => (
-            <Card key={tier.name} className="h-full">
+          {c.tiers.items.map((tier, index) => (
+            <Card key={`${tier.name}-${index}`} className="h-full">
               <h3 className="t-h3 text-ink">{tier.name}</h3>
-              {"inherits" in tier && tier.inherits && (
-                <p className="t-small mt-2 text-gray-600">{tier.inherits}</p>
-              )}
+              {tier.inherits && <p className="t-small mt-2 text-gray-600">{tier.inherits}</p>}
               <ul className="mt-4 space-y-2">
-                {tier.items.map((item) => (
-                  <li key={item} className="t-body flex gap-2 text-ink">
+                {tier.features.map((item, i) => (
+                  <li key={`${item}-${i}`} className="t-body flex gap-2 text-ink">
                     <span aria-hidden="true" style={{ color: "var(--color-teal-700)" }}>
                       ·
                     </span>
@@ -95,43 +88,33 @@ export default function Page() {
           ))}
         </div>
 
-        <p className="t-body mt-6 max-w-[65ch] text-ink">
-          Founding families help us set fair pricing — tell us what would work
-          for you in the registration form.
-        </p>
+        <p className="t-body mt-6 max-w-[65ch] text-ink">{c.tiers.footnote}</p>
       </Section>
 
       {/* --- Why trust us -------------------------------------------------- */}
       <Section tone="white">
         <div className="grid gap-10 md:grid-cols-2 md:gap-14">
           <div>
-            <SectionTitle>Why trust us</SectionTitle>
+            <SectionTitle>{c.trust.title}</SectionTitle>
 
             <blockquote className="t-body-lg mt-6 max-w-[60ch] text-ink">
-              <p>
-                I built SynergyCare because I know what it&rsquo;s like to get that
-                call — the one that comes at 2 a.m., when you&rsquo;re 11,000 km
-                away and all you can do is send money and wait. My parents are in
-                the Philippines. I&rsquo;m here in New Zealand.
-              </p>
-              <p className="mt-4">
-                For years I sent money for &ldquo;gamot&rdquo; and never really knew what
-                happened next. So I started arranging it properly — a person on
-                the ground, real appointments, real updates. That&rsquo;s what this
-                is, and I&rsquo;m building it for families like mine.
-              </p>
+              {c.trust.founderStory.map((para, i) => (
+                <p key={i} className={i ? "mt-4" : undefined}>
+                  {para}
+                </p>
+              ))}
             </blockquote>
 
-            <p className="t-body mt-5 font-medium text-ink">Rafael</p>
-            <p className="t-small text-gray-600">Founder, SynergyCare · Auckland, NZ</p>
+            <p className="t-body mt-5 font-medium text-ink">{c.trust.founderName}</p>
+            <p className="t-small text-gray-600">{c.trust.founderRole}</p>
           </div>
 
           <div>
             <Card>
-              <h3 className="t-h3 text-ink">How we work</h3>
+              <h3 className="t-h3 text-ink">{c.trust.howWeWorkTitle}</h3>
               <ul className="mt-4 space-y-3">
-                {HOW_WE_WORK.map((item) => (
-                  <li key={item} className="t-body flex gap-3 text-ink">
+                {c.trust.howWeWork.map((item, i) => (
+                  <li key={`${item}-${i}`} className="t-body flex gap-3 text-ink">
                     <span aria-hidden="true" style={{ color: "var(--color-teal-700)" }}>
                       ✓
                     </span>
@@ -142,9 +125,7 @@ export default function Page() {
             </Card>
 
             <p className="t-small mt-5 text-gray-600">
-              SynergyCare is operated by a New Zealand registered company. We
-              collect only what we need to contact you about SynergyCare, we
-              never sell your data, and you can ask us to delete it at any time.{" "}
+              {c.trust.legal}{" "}
               <a href="/privacy" className="text-teal-700 underline-offset-2 hover:underline">
                 Read our privacy policy
               </a>
@@ -157,20 +138,22 @@ export default function Page() {
       {/* --- EOI form ------------------------------------------------------ */}
       <Section id="eoi-form" tone="sampaguita">
         <div className="mx-auto max-w-[720px]">
-          <div className="mb-6">
-            <Badge>Founding families</Badge>
-          </div>
-          <EoiForm />
+          {c.form.badge && (
+            <div className="mb-6">
+              <Badge>{c.form.badge}</Badge>
+            </div>
+          )}
+          <EoiForm content={c.form} />
         </div>
       </Section>
 
       {/* --- FAQ ----------------------------------------------------------- */}
       <Section tone="white">
-        <SectionTitle>Questions</SectionTitle>
+        <SectionTitle>{c.faq.title}</SectionTitle>
 
         <div className="mt-8 max-w-[720px] divide-y divide-gray-300 border-y border-gray-300">
-          {FAQS.map((faq) => (
-            <details key={faq.q} className="group py-5">
+          {c.faq.items.map((faq, i) => (
+            <details key={`${faq.q}-${i}`} className="group py-5">
               <summary className="t-h3 cursor-pointer list-none text-ink marker:content-none">
                 {faq.q}
               </summary>
@@ -180,7 +163,7 @@ export default function Page() {
         </div>
 
         <div className="mt-10">
-          <CtaButton href="#eoi-form">Register your interest</CtaButton>
+          <CtaButton href="#eoi-form">{c.hero.ctaLabel}</CtaButton>
         </div>
       </Section>
 
@@ -190,10 +173,7 @@ export default function Page() {
           <p className="t-h3" style={{ color: "var(--color-teal-700)" }}>
             SynergyCare
           </p>
-          <p className="t-body max-w-[50ch] text-ink">
-            Real care for your parents in the Philippines, arranged from wherever
-            you are.
-          </p>
+          <p className="t-body max-w-[50ch] text-ink">{c.footer.mission}</p>
           <div className="t-small flex flex-wrap gap-x-6 gap-y-2 text-gray-600">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
@@ -205,9 +185,7 @@ export default function Page() {
               Privacy policy
             </a>
           </div>
-          <p className="t-small text-gray-600">
-            Made with aroha in Aotearoa, for families in the Philippines.
-          </p>
+          {c.footer.flourish && <p className="t-small text-gray-600">{c.footer.flourish}</p>}
         </div>
       </footer>
     </>

@@ -1,15 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HEADLINES, SUBHEADLINE, type HeadlineVariant } from "@/lib/content";
+import type { HeadlineVariant, SiteContent } from "@/lib/content";
 import { resolveVariant } from "@/lib/attribution";
 import { CtaButton } from "./ui";
 
-export default function Hero() {
+export default function Hero({
+  hero,
+  image,
+}: {
+  hero: SiteContent["hero"];
+  image: { url: string; version: string } | null;
+}) {
   // Render A on the server and on first paint, then swap to the visitor's
   // persisted variant — avoids a hydration mismatch and a headline flash.
   const [variant, setVariant] = useState<HeadlineVariant>("A");
-  const [hasPhoto, setHasPhoto] = useState(true);
+  const [hasPhoto, setHasPhoto] = useState(Boolean(image));
 
   useEffect(() => setVariant(resolveVariant()), []);
 
@@ -22,27 +28,26 @@ export default function Hero() {
 
         <div className="grid items-center gap-10 md:grid-cols-2 md:gap-14">
           <div className="max-w-[720px]">
-            <h1 className="t-display text-ink">{HEADLINES[variant]}</h1>
+            <h1 className="t-display text-ink">
+              {variant === "B" ? hero.headlineB : hero.headlineA}
+            </h1>
 
-            <p className="t-body-lg mt-5 text-ink">{SUBHEADLINE}</p>
+            <p className="t-body-lg mt-5 text-ink">{hero.subheadline}</p>
 
             <div className="mt-8">
-              <CtaButton href="#eoi-form">Register your interest</CtaButton>
-              <p className="t-small mt-3 text-gray-600">
-                Free to register · Founding families get priority access and
-                founding pricing
-              </p>
+              <CtaButton href="#eoi-form">{hero.ctaLabel}</CtaButton>
+              <p className="t-small mt-3 text-gray-600">{hero.trustLine}</p>
             </div>
           </div>
 
           <div className="order-first md:order-last">
-            {hasPhoto ? (
-              /* Replace /public/hero.webp with the real photo: an adult child on
-                 a video call with a parent — warm, natural light (§8). */
+            {hasPhoto && image ? (
+              /* Uploaded from /admin/media. The ?v= hash in the URL means a new
+                 upload busts every cache immediately. */
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src="/hero.webp"
-                alt="A daughter in New Zealand on a video call with her mother in the Philippines, both smiling."
+                src={image.url}
+                alt={hero.imageAlt}
                 width={1000}
                 height={800}
                 className="aspect-[5/4] w-full rounded-[16px] object-cover"
@@ -72,8 +77,8 @@ function PhotoPlaceholder() {
       }}
     >
       <p className="t-small max-w-[36ch] text-gray-600">
-        Add <code>public/hero.webp</code> — an adult child on a video call with
-        a parent. Warm, real, natural light.
+        Upload a hero photo in the admin portal — an adult child on a video call
+        with a parent. Warm, real, natural light.
       </p>
     </div>
   );

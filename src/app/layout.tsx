@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { getSiteContent } from "@/lib/site-content";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -18,30 +19,31 @@ const inter = Inter({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://synergycare.co.nz";
 
-const DESCRIPTION =
-  "SynergyCare gives your family a dedicated care coordinator in the Philippines — doctor visits, check-ups, medicines, and honest updates back to you. So you always know they're truly okay.";
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getSiteContent();
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: "SynergyCare — Care for your parents in the Philippines, from NZ",
-  description: DESCRIPTION,
-  openGraph: {
-    title: "SynergyCare — Care for your parents in the Philippines, from NZ",
-    description: DESCRIPTION,
-    url: SITE_URL,
-    siteName: "SynergyCare",
-    locale: "en_NZ",
-    type: "website",
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "SynergyCare" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "SynergyCare — Care for your parents in the Philippines, from NZ",
-    description: DESCRIPTION,
-    images: ["/og.jpg"],
-  },
-  robots: { index: true, follow: true },
-};
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: seo.title,
+    description: seo.description,
+    openGraph: {
+      title: seo.title,
+      description: seo.description,
+      url: SITE_URL,
+      siteName: "SynergyCare",
+      locale: "en_NZ",
+      type: "website",
+      images: [{ url: "/api/media/og", width: 1200, height: 630, alt: "SynergyCare" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.title,
+      description: seo.description,
+      images: ["/api/media/og"],
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#FAF7F2",

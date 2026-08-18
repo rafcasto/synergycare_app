@@ -7,6 +7,7 @@ import {
   logEvent,
   type Analytics,
 } from "firebase/analytics";
+import { getAuth, type Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,6 +23,10 @@ let analyticsPromise: Promise<Analytics | null> | null = null;
 
 function app(): FirebaseApp {
   return getApps().length ? getApp() : initializeApp(firebaseConfig);
+}
+
+export function auth(): Auth {
+  return getAuth(app());
 }
 
 /** Analytics is unsupported in SSR and some browsers — resolve to null there. */

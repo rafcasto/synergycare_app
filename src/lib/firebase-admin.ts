@@ -6,7 +6,7 @@ import { getFirestore } from "firebase-admin/firestore";
  * Server-only Firebase Admin singleton. Credentials come from env vars —
  * never from a checked-in service-account JSON file.
  */
-function adminApp() {
+export function adminApp() {
   if (getApps().length) return getApp();
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
