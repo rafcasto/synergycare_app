@@ -26,6 +26,20 @@ function validateAnswers(input: unknown): Partial<Answers> {
   return out;
 }
 
+/**
+ * Drop empty values before a merge write. Without this, someone registering a
+ * second time from a direct visit would overwrite the UTMs and the free-text
+ * answer captured on their first visit with nulls — silently destroying the
+ * attribution and interview notes this page exists to collect.
+ */
+function compact<T extends Record<string, unknown>>(input: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(input).filter(
+      ([, value]) => value !== null && value !== undefined && value !== ""
+    )
+  ) as Partial<T>;
+}
+
 export async function POST(request: Request) {
   let body: EoiPayload;
   try {
@@ -51,35 +65,47 @@ export async function POST(request: Request) {
   const tags = tagLead(answers);
   const headline_variant = body.headline_variant === "B" ? "B" : "A";
 
-  const record = {
+  const record = compact({
     first_name,
     email,
-    mobile: mobile || null,
-    worry_text: worry_text || null,
-    q1_region: answers.q1_region ?? null,
-    q2_for_whom: answers.q2_for_whom ?? null,
-    q3_age: answers.q3_age ?? null,
-    q4_location: answers.q4_location ?? null,
-    q5_medical_remit: answers.q5_medical_remit ?? null,
-    q6_budget: answers.q6_budget ?? null,
-    q7_commitment: answers.q7_commitment ?? null,
+    mobile,
+    worry_text,
+    ...answers,
     score,
-    tags,
     headline_variant,
-    utm_source: clean(body.utm_source, 200) || null,
-    utm_medium: clean(body.utm_medium, 200) || null,
-    utm_campaign: clean(body.utm_campaign, 200) || null,
-    referrer: clean(body.referrer, 400) || null,
-    created_at: FieldValue.serverTimestamp(),
-    updated_at: FieldValue.serverTimestamp(),
-  };
+    utm_source: clean(body.utm_source, 200),
+    utm_medium: clean(body.utm_medium, 200),
+    utm_campaign: clean(body.utm_campaign, 200),
+    referrer: clean(body.referrer, 400),
+  });
+
+  let isNew = true;
 
   try {
+    const ref = db().collection(COLLECTION).doc(email);
+
     // Doc id = email, so a resubmission updates rather than duplicating (§6).
-    await db()
-      .collection(COLLECTION)
-      .doc(email)
-      .set(record, { merge: true });
+    // The transaction lets us keep created_at pinned to the first registration
+    // while still refreshing everything the visitor actually re-answered.
+    await db().runTransaction(async (tx) => {
+      const snapshot = await tx.get(ref);
+      isNew = !snapshot.exists;
+
+      tx.set(
+        ref,
+        {
+          ...record,
+          // tags[] is derived, so it must replace rather than merge —
+          // otherwise a corrected answer leaves a stale tag behind.
+          tags,
+          updated_at: FieldValue.serverTimestamp(),
+          ...(isNew
+            ? { created_at: FieldValue.serverTimestamp() }
+            : { resubmissions: FieldValue.increment(1) }),
+        },
+        { merge: true }
+      );
+    });
   } catch (error) {
     console.error("[eoi] Firestore write failed:", error);
     return NextResponse.json(
@@ -88,10 +114,13 @@ export async function POST(request: Request) {
     );
   }
 
-  // Fire-and-forget: a failed email must not fail the registration.
-  await sendWelcomeEmail({ first_name, email }).catch((error) =>
-    console.error("[eoi] Welcome email failed:", error)
-  );
+  // Only greet first-time registrants, and never let a failed send fail the
+  // registration — the lead is already safely stored.
+  if (isNew) {
+    await sendWelcomeEmail({ first_name, email }).catch((error) =>
+      console.error("[eoi] Welcome email failed:", error)
+    );
+  }
 
   return NextResponse.json({ ok: true, score });
 }
