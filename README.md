@@ -19,27 +19,23 @@ logic) and `SynergyCare_Design_System.md` (all visual decisions).
 npm run dev
 ```
 
-## One manual step before the form will save
+## Firestore
 
-The Firestore API is not yet enabled on `synergy-care-ab574`. The service
-account cannot enable it itself — it needs an owner click:
-
-1. Open https://console.firebase.google.com/project/synergy-care-ab574/firestore
-2. **Create database** → production mode → region `australia-southeast1`
-   (closest to NZ; keeps writes fast and data in-region)
-3. Push the lock-down rules:
+The database is live and the full round trip is verified. Push the lock-down
+rules before the page takes real traffic:
 
 ```bash
 npx firebase deploy --only firestore:rules --project synergy-care-ab574
 ```
 
-Then confirm the round trip:
+Sanity-check the endpoint any time with:
 
 ```bash
 curl -s -X POST http://localhost:3000/api/eoi -H 'Content-Type: application/json' -d '{"first_name":"Test","email":"test@example.com","answers":{"q1_region":"auckland","q2_for_whom":"both_parents","q3_age":"75_plus","q4_location":"province_rural","q5_medical_remit":"emergency","q6_budget":"100_149","q7_commitment":"yes"},"headline_variant":"A"}'
 ```
 
-Expect `{"ok":true,"score":"A"}`.
+Expect `{"ok":true,"score":"A"}`. Delete the test document afterwards so it
+does not pollute the conversion numbers.
 
 ## Environment
 
@@ -93,4 +89,11 @@ duplicating.
 `first_name`, `email`, `mobile`, `worry_text`, `q1_region`, `q2_for_whom`,
 `q3_age`, `q4_location`, `q5_medical_remit`, `q6_budget`, `q7_commitment`,
 `score`, `tags[]`, `headline_variant`, `utm_source`, `utm_medium`,
-`utm_campaign`, `referrer`, `created_at`, `updated_at`.
+`utm_campaign`, `referrer`, `created_at`, `updated_at`, `resubmissions`.
+
+Writes merge, and empty values are stripped before the write. A visitor who
+registers from a Facebook ad and later registers again from a direct visit
+keeps the original UTMs, free-text answer and `created_at` — only the fields
+they actually re-answered change. `tags[]` is derived, so it is replaced
+wholesale rather than merged, otherwise a corrected answer would leave a stale
+tag behind and skew the provincial demand map.
