@@ -6,13 +6,14 @@ import { QUESTIONS, type QuestionId } from "@/lib/questions";
 import { captureUtm, resolveVariant, type Utm } from "@/lib/attribution";
 import { track } from "@/lib/firebase-client";
 import { CtaButton } from "./ui";
+import type { SiteContent } from "@/lib/content";
 
 type Step = 1 | 2 | "done";
 type Answers = Partial<Record<QuestionId, string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function EoiForm() {
+export default function EoiForm({ content }: { content: SiteContent["form"] }) {
   const [step, setStep] = useState<Step>(1);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -96,7 +97,8 @@ export default function EoiForm() {
     }
   }
 
-  if (step === "done") return <Confirmation firstName={firstName.trim()} />;
+  if (step === "done")
+    return <Confirmation firstName={firstName.trim()} content={content} />;
 
   return (
     <div
@@ -105,11 +107,8 @@ export default function EoiForm() {
     >
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h2 className="t-h2 text-ink">Register your interest</h2>
-          <p className="t-body mt-2 max-w-[52ch] text-gray-600">
-            Takes about 90 seconds. Founding families get priority access,
-            founding pricing, and a direct line to the founder.
-          </p>
+          <h2 className="t-h2 text-ink">{content.title}</h2>
+          <p className="t-body mt-2 max-w-[52ch] text-gray-600">{content.subtitle}</p>
         </div>
         <span className="t-small shrink-0 text-gray-600">{step} of 2</span>
       </div>
@@ -215,8 +214,7 @@ export default function EoiForm() {
 
             <div>
               <p className="t-small mb-4 text-gray-600">
-                We&rsquo;ll only use this to contact you about SynergyCare. No spam,
-                ever.{" "}
+                {content.privacyNote}{" "}
                 <a href="/privacy" className="text-teal-700 underline-offset-2 hover:underline">
                   Privacy policy
                 </a>
@@ -230,7 +228,7 @@ export default function EoiForm() {
               )}
 
               <CtaButton type="submit" disabled={submitting} full>
-                {submitting ? "Sending…" : "Register my interest"}
+                {submitting ? "Sending…" : content.submitLabel}
               </CtaButton>
 
               <button
@@ -311,7 +309,13 @@ function ErrorText({ children, id }: { children: React.ReactNode; id?: string })
   );
 }
 
-function Confirmation({ firstName }: { firstName: string }) {
+function Confirmation({
+  firstName,
+  content,
+}: {
+  firstName: string;
+  content: SiteContent["form"];
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -341,20 +345,16 @@ function Confirmation({ firstName }: { firstName: string }) {
         <Check size={24} strokeWidth={1.5} style={{ color: "var(--color-teal-700)" }} aria-hidden="true" />
       </div>
 
-      <h2 className="t-h2 mt-5 text-ink">Salamat, {firstName}!</h2>
+      <h2 className="t-h2 mt-5 text-ink">
+        {content.confirmationTitle.replace("{name}", firstName)}
+      </h2>
 
-      <p className="t-body-lg mt-3 max-w-[56ch] text-ink">
-        You&rsquo;re on the founding list. I&rsquo;ll personally be in touch within a
-        week. Check your inbox — there&rsquo;s a short note from me with one
-        question I&rsquo;d love you to answer.
-      </p>
+      <p className="t-body-lg mt-3 max-w-[56ch] text-ink">{content.confirmationBody}</p>
       <p className="t-body mt-3 text-gray-600">— Rafael</p>
 
       <div className="mt-8 rounded-[16px] border border-gray-300 p-5">
-        <p className="t-body font-medium text-ink">
-          Know someone else supporting parents back home?
-        </p>
-        <p className="t-body mt-1 text-gray-600">Send them this page.</p>
+        <p className="t-body font-medium text-ink">{content.sharePromptTitle}</p>
+        <p className="t-body mt-1 text-gray-600">{content.sharePromptBody}</p>
         <button
           type="button"
           onClick={copyLink}

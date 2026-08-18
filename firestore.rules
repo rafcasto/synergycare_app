@@ -1,7 +1,14 @@
 rules_version = '2';
 
-// All EOI writes go through the server (Admin SDK), which bypasses these
-// rules. Client SDKs get nothing — no reading the lead list from the browser.
+// Everything is written and read through the server (Admin SDK), which
+// bypasses these rules. Client SDKs get nothing:
+//
+//   eoi_leads     — registrations, including names, emails and phone numbers
+//   site_content  — landing page copy, editable only from /admin
+//   media         — uploaded image bytes, served via /api/media/[slug]
+//
+// The browser only ever loads Firebase Analytics and Auth, never Firestore,
+// so a total lockdown costs nothing and keeps the lead list private.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {

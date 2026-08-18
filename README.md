@@ -37,6 +37,59 @@ curl -s -X POST http://localhost:3000/api/eoi -H 'Content-Type: application/json
 Expect `{"ok":true,"score":"A"}`. Delete the test document afterwards so it
 does not pollute the conversion numbers.
 
+
+## Admin portal
+
+Sign in at **`/admin`**. The portal has four screens:
+
+| Screen | What it does |
+|---|---|
+| Dashboard | Registration counts, A/B/C lead quality against the 30% gate, willingness-to-pay spread, where parents live, how people found you, and the headline A/B split |
+| Registrations | Every answer as given. Filter by grade, provincial, or "wrote a worry"; search name, email and free text; open a family to read their full questionnaire; export CSV |
+| Page content | Every word on the landing page, grouped by section. Save publishes immediately |
+| Images | Drag-and-drop upload for the hero photo, social share image and founder photo |
+
+### Access
+
+Admin access is an explicit `admin` custom claim, not merely having a Firebase
+account — so if this project ever holds non-staff accounts, they cannot reach
+the portal. Grant or revoke it with:
+
+```bash
+npm run grant-admin -- someone@synergycare.co.nz
+```
+
+Add `--revoke` to remove access. The account is created if it does not exist,
+and a temporary password is printed. Changes take effect at the next sign-in,
+because existing sessions are revoked.
+
+Sign-in exchanges a Firebase ID token for an httpOnly session cookie, verified
+server-side on every admin request. The token is never kept anywhere JavaScript
+can read it, so an XSS bug on the public page cannot lift admin credentials.
+
+### Editing content
+
+`src/lib/content.ts` holds the launch copy as defaults **in code**. The CMS
+stores only overrides, deep-merged on top. That means the page still renders
+the original copy if Firestore is unreachable or a field has never been touched
+— a broken CMS cannot take the landing page down mid-campaign.
+
+Both hero headlines are editable, so the A/B test keeps running while copy is
+tuned. Saving revalidates the landing page immediately rather than waiting for
+the 5-minute ISR window.
+
+### Images
+
+Firebase Storage needs the Blaze plan and this project has no billing account,
+so images are stored in Firestore instead. Every upload is re-encoded to WebP
+and resized, targeting ~280 KB to protect the sub-2s load on 4G — an 11.6 MB
+photo came out at 429 KB in testing, and a normal photograph lands far below
+that. Firestore caps a document at 1 MiB, which the encoder enforces.
+
+Images are served from `/api/media/[slug]` with a `?v=` content hash and
+immutable cache headers, so a new upload busts every cache instantly. If
+billing is ever enabled, only `src/lib/media-store.ts` needs to change.
+
 ## Environment
 
 `.env.local` holds real values and is gitignored. `.env.example` is the
@@ -46,12 +99,14 @@ sequences intact**.
 
 ## What to add before launch
 
+All of these are now editable in the admin portal — no code changes needed.
+
 | Item | Where |
 |---|---|
-| Hero photograph (adult child on a video call with a parent) | `public/hero.webp` — a warm placeholder shows until it exists |
-| OG share image, 1200×630 | `public/og.jpg` |
-| Founder photo + real founder story | `src/app/page.tsx`, "Why trust us" |
-| NZ company name for the footer trust line | `src/app/page.tsx` |
+| Hero photograph (adult child on a video call with a parent) | `/admin/media` — a warm placeholder shows until one is uploaded |
+| OG share image, 1200×630 | `/admin/media` |
+| Real founder story | `/admin/content` → "Why trust us" |
+| NZ company name for the footer trust line | `/admin/content` → "Why trust us" |
 
 ## How the measurement works
 
