@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
-import type { Faq, Pair, SiteContent, Tier } from "@/lib/content";
+import type { Faq, Pair, SiteContent, TierRow } from "@/lib/content";
 import { Panel } from "./AdminUI";
 
 type Section = "hero" | "problem" | "how" | "tiers" | "trust" | "form" | "faq" | "footer" | "seo";
@@ -12,7 +12,7 @@ const SECTIONS: { id: Section; label: string; blurb: string }[] = [
   { id: "hero", label: "Hero", blurb: "The first thing a visitor reads, including both A/B headlines." },
   { id: "problem", label: "Sounds familiar?", blurb: "The three recognisable moments, and the brand thesis." },
   { id: "how", label: "How it works", blurb: "The three steps and the coverage note." },
-  { id: "tiers", label: "Membership", blurb: "What each tier will include. Deliberately no prices." },
+  { id: "tiers", label: "Packages", blurb: "The package comparison table. Deliberately no prices." },
   { id: "trust", label: "Why trust us", blurb: "Founder story and how-we-work promises." },
   { id: "form", label: "Registration form", blurb: "Form headings, privacy note and the thank-you screen." },
   { id: "faq", label: "Questions", blurb: "The FAQ list." },
@@ -192,25 +192,45 @@ export default function ContentEditor({
             <Fields>
               <Text label="Section title" value={content.tiers.title} onChange={(v) => patch("tiers", { title: v })} />
               <Text label="Intro" value={content.tiers.intro} onChange={(v) => patch("tiers", { intro: v })} multiline />
-              <ListEditor<Tier>
-                label="Tiers"
-                items={content.tiers.items}
-                blank={{ name: "", inherits: "", features: [] }}
-                onChange={(items) => patch("tiers", { items })}
-                render={(tier, update) => (
+              <StringList
+                label="Package names (columns)"
+                hint="One per column, left to right."
+                items={content.tiers.columns}
+                onChange={(columns) => patch("tiers", { columns })}
+              />
+              <ListEditor<TierRow>
+                label="Features (rows)"
+                items={content.tiers.rows}
+                blank={{ label: "", cells: content.tiers.columns.map(() => "") }}
+                onChange={(rows) => patch("tiers", { rows })}
+                render={(row, update) => (
                   <>
-                    <Text label="Name" value={tier.name} onChange={(v) => update({ name: v })} />
-                    <Text
-                      label="Inherits line"
-                      hint="Optional, e.g. “Everything in Essentials, plus”."
-                      value={tier.inherits}
-                      onChange={(v) => update({ inherits: v })}
-                    />
-                    <StringList
-                      label="Features"
-                      items={tier.features}
-                      onChange={(features) => update({ features })}
-                    />
+                    <Text label="Feature" value={row.label} onChange={(v) => update({ label: v })} />
+                    <div>
+                      <p className="t-small font-medium text-ink">Per package</p>
+                      <p className="t-small mt-0.5 text-gray-600">
+                        Type “Included” to show the word, “✓” to show a tick, or leave blank if it isn't part of that package.
+                      </p>
+                      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                        {content.tiers.columns.map((column, ci) => (
+                          <label key={`${column}-${ci}`} className="block">
+                            <span className="t-small text-gray-600">{column || `Column ${ci + 1}`}</span>
+                            <input
+                              type="text"
+                              value={row.cells[ci] ?? ""}
+                              placeholder="—"
+                              onChange={(e) => {
+                                const cells = content.tiers.columns.map((_, j) =>
+                                  j === ci ? e.target.value : row.cells[j] ?? ""
+                                );
+                                update({ cells });
+                              }}
+                              className="mt-1 min-h-[44px] w-full rounded-[12px] border-[1.5px] border-gray-300 bg-white px-3 py-2 text-[16px] text-ink outline-none focus:border-teal-600"
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
               />

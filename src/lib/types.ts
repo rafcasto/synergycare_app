@@ -8,7 +8,7 @@ export type LeadScore = "A" | "B" | "C";
 export type EoiPayload = {
   first_name: string;
   email: string;
-  mobile?: string;
+  mobile: string;
   worry_text?: string;
   answers: Partial<Answers>;
   headline_variant: HeadlineVariant;

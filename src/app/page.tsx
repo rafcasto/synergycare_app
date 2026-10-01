@@ -4,6 +4,7 @@ import Analytics from "@/components/Analytics";
 import Reveal from "@/components/Reveal";
 import Hero from "@/components/Hero";
 import EoiForm from "@/components/EoiForm";
+import PackageTable from "@/components/PackageTable";
 
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "rafael@digitalpathways.io";
 
@@ -69,24 +70,7 @@ export default async function Page() {
         <SectionTitle>{c.tiers.title}</SectionTitle>
         <p className="t-body mt-3 max-w-[65ch] text-gray-600">{c.tiers.intro}</p>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {c.tiers.items.map((tier, index) => (
-            <Card key={`${tier.name}-${index}`} className="h-full">
-              <h3 className="t-h3 text-ink">{tier.name}</h3>
-              {tier.inherits && <p className="t-small mt-2 text-gray-600">{tier.inherits}</p>}
-              <ul className="mt-4 space-y-2">
-                {tier.features.map((item, i) => (
-                  <li key={`${item}-${i}`} className="t-body flex gap-2 text-ink">
-                    <span aria-hidden="true" style={{ color: "var(--color-teal-700)" }}>
-                      ·
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          ))}
-        </div>
+        <PackageTable tiers={c.tiers} />
 
         <p className="t-body mt-6 max-w-[65ch] text-ink">{c.tiers.footnote}</p>
       </Section>
