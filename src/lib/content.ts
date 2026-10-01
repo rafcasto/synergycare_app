@@ -43,6 +43,7 @@ export type SiteContent = {
     howWeWork: string[];
     legal: string;
   };
+  card: { title: string; tagline: string; imageAlt: string };
   form: {
     badge: string;
     title: string;
@@ -148,6 +149,13 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
     legal:
       "SynergyCare is operated by a New Zealand registered company. We collect only what we need to contact you about SynergyCare, we never sell your data, and you can ask us to delete it at any time.",
+  },
+  card: {
+    title: "Get your cross-border healthcare for your parents back home!",
+    tagline:
+      "Say goodbye to multiple remittances, bank fees, and your parents' trips to the bank!",
+    imageAlt:
+      "A dark green SynergyCare membership card with the tagline “Love beyond borders”, showing two member names and a member ID.",
   },
   form: {
     badge: "Founding families",

@@ -5,6 +5,7 @@ import Reveal from "@/components/Reveal";
 import Hero from "@/components/Hero";
 import EoiForm from "@/components/EoiForm";
 import PackageTable from "@/components/PackageTable";
+import CardSection from "@/components/CardSection";
 
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "rafael@digitalpathways.io";
 
@@ -129,6 +130,11 @@ export default async function Page() {
           )}
           <EoiForm content={c.form} />
         </div>
+      </Section>
+
+      {/* --- Cross-border healthcare card ---------------------------------- */}
+      <Section tone="white">
+        <CardSection card={c.card} image={c.cardImage} />
       </Section>
 
       {/* --- FAQ ----------------------------------------------------------- */}

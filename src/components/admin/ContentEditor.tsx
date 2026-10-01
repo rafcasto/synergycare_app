@@ -6,7 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import type { Faq, Pair, SiteContent, TierRow } from "@/lib/content";
 import { Panel } from "./AdminUI";
 
-type Section = "hero" | "problem" | "how" | "tiers" | "trust" | "form" | "faq" | "footer" | "seo";
+type Section = "hero" | "problem" | "how" | "tiers" | "trust" | "card" | "form" | "faq" | "footer" | "seo";
 
 const SECTIONS: { id: Section; label: string; blurb: string }[] = [
   { id: "hero", label: "Hero", blurb: "The first thing a visitor reads, including both A/B headlines." },
@@ -14,6 +14,7 @@ const SECTIONS: { id: Section; label: string; blurb: string }[] = [
   { id: "how", label: "How it works", blurb: "The three steps and the coverage note." },
   { id: "tiers", label: "Packages", blurb: "The package comparison table. Deliberately no prices." },
   { id: "trust", label: "Why trust us", blurb: "Founder story and how-we-work promises." },
+  { id: "card", label: "Membership card", blurb: "The cross-border healthcare headline and tagline around the card. Upload the card artwork under Images." },
   { id: "form", label: "Registration form", blurb: "Form headings, privacy note and the thank-you screen." },
   { id: "faq", label: "Questions", blurb: "The FAQ list." },
   { id: "footer", label: "Footer", blurb: "Mission line and sign-off." },
@@ -270,6 +271,29 @@ export default function ContentEditor({
                 value={content.trust.legal}
                 onChange={(v) => patch("trust", { legal: v })}
                 multiline
+              />
+            </Fields>
+          )}
+
+          {section === "card" && (
+            <Fields>
+              <Text
+                label="Headline"
+                value={content.card.title}
+                onChange={(v) => patch("card", { title: v })}
+                multiline
+              />
+              <Text
+                label="Tagline under the card"
+                value={content.card.tagline}
+                onChange={(v) => patch("card", { tagline: v })}
+                multiline
+              />
+              <Text
+                label="Card image description"
+                hint="Read aloud by screen readers, and shown if the image fails to load."
+                value={content.card.imageAlt}
+                onChange={(v) => patch("card", { imageAlt: v })}
               />
             </Fields>
           )}
