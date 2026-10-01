@@ -9,7 +9,12 @@
 
 export type Pair = { title: string; body: string };
 export type Faq = { q: string; a: string };
-export type Tier = { name: string; inherits: string; features: string[] };
+/**
+ * One row of the package comparison table. `cells` lines up with
+ * `tiers.columns`: "Included" renders as text, "✓" renders as a tick, and an
+ * empty string leaves the cell blank (not part of that package).
+ */
+export type TierRow = { label: string; cells: string[] };
 
 export type SiteContent = {
   hero: {
@@ -22,7 +27,13 @@ export type SiteContent = {
   };
   problem: { title: string; cards: Pair[]; thesis: string };
   how: { title: string; steps: Pair[]; note: string };
-  tiers: { title: string; intro: string; items: Tier[]; footnote: string };
+  tiers: {
+    title: string;
+    intro: string;
+    columns: string[];
+    rows: TierRow[];
+    footnote: string;
+  };
   trust: {
     title: string;
     founderStory: string[];
@@ -101,39 +112,21 @@ export const DEFAULT_CONTENT: SiteContent = {
     note: "Works anywhere in the Philippines we can verify quality providers — we'll confirm coverage for your family's location when you register.",
   },
   tiers: {
-    title: "What membership will include",
+    title: "Which healthcare package fits your parents back home?",
     intro:
       "SynergyCare is pre-launch. This is what we're building, shaped with our first founding families.",
-    items: [
-      {
-        name: "Essentials",
-        inherits: "",
-        features: [
-          "Dedicated care coordinator",
-          "Unlimited GP teleconsults for your parents",
-          "Medicine and lab coordination",
-          "Quarterly written health report",
-        ],
-      },
-      {
-        name: "Complete",
-        inherits: "Everything in Essentials, plus",
-        features: [
-          "Scheduled nurse home visits",
-          "Annual full lab panel",
-          "Medication management",
-          "Covers both parents",
-        ],
-      },
-      {
-        name: "Total Care",
-        inherits: "Everything in Complete, plus",
-        features: [
-          "Monthly visits",
-          "Chronic-condition monitoring",
-          "Hospital accompaniment",
-        ],
-      },
+    columns: ["Essential", "Care Plus", "Premium"],
+    rows: [
+      { label: "Dedicated family coordinator", cells: ["Included", "Included", "Included"] },
+      { label: "Digital registered nurse", cells: ["Included", "Included", "Included"] },
+      { label: "Teleconsultation", cells: ["Included", "Included", "Included"] },
+      { label: "Escort for appointments / caregiver", cells: ["", "Included", "Included"] },
+      { label: "Pharmacy and medications", cells: ["✓", "✓", "✓"] },
+      { label: "Laboratory", cells: ["✓", "✓", "✓"] },
+      { label: "Imaging and ultrasound", cells: ["", "✓", "✓"] },
+      { label: "Specialist doctor", cells: ["", "✓", "✓"] },
+      { label: "Health care wallet (top-ups available)", cells: ["", "Included", "Included"] },
+      { label: "Personalised plan", cells: ["", "Included", "Included"] },
     ],
     footnote:
       "Founding families help us set fair pricing — tell us what would work for you in the registration form.",

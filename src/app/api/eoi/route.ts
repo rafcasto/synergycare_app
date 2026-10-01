@@ -10,6 +10,7 @@ export const runtime = "nodejs";
 
 const COLLECTION = "eoi_leads";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^\+?[\d\s\-().]{7,}$/;
 
 function clean(v: unknown, max: number): string {
   return typeof v === "string" ? v.trim().slice(0, max) : "";
@@ -58,6 +59,9 @@ export async function POST(request: Request) {
   }
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "That email doesn't look right." }, { status: 400 });
+  }
+  if (!PHONE_RE.test(mobile)) {
+    return NextResponse.json({ error: "Please enter a valid mobile number." }, { status: 400 });
   }
 
   const answers = validateAnswers(body.answers);
