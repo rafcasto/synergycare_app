@@ -10,13 +10,14 @@ export function Section({
 }: {
   children: ReactNode;
   id?: string;
-  tone?: "sampaguita" | "white" | "teal";
+  tone?: "sampaguita" | "white" | "teal" | "deep";
   className?: string;
 }) {
   const tones = {
     sampaguita: "bg-sampaguita",
     white: "bg-white",
     teal: "bg-teal-100",
+    deep: "bg-teal-700",
   } as const;
 
   return (

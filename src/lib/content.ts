@@ -34,6 +34,7 @@ export type SiteContent = {
     rows: TierRow[];
     footnote: string;
   };
+  services: { title: string; items: Pair[] };
   trust: {
     title: string;
     founderStory: string[];
@@ -131,6 +132,27 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
     footnote:
       "Founding families help us set fair pricing — tell us what would work for you in the registration form.",
+  },
+  services: {
+    title: "Other Services",
+    items: [
+      {
+        title: "Transport",
+        body: "We can arrange reliable transport for your parents to and from healthcare appointments, with the cost conveniently billed to you in NZD.",
+      },
+      {
+        title: "Private Nurse / Caregiver",
+        body: "When your family needs additional help at home, we can arrange private nursing or caregiver support, including respite care.",
+      },
+      {
+        title: "Mobility Aids",
+        body: "When mobility becomes a challenge, we can help arrange essential equipment such as walking frames, wheelchairs, shower chairs and other mobility aids.",
+      },
+      {
+        title: "Monitoring Kit",
+        body: "Help your parents monitor their health at home with essential equipment such as blood pressure monitors, blood glucose monitoring devices, and nebulisation kits, with support on how to use the equipment appropriately and safely.",
+      },
+    ],
   },
   trust: {
     title: "Why trust us",

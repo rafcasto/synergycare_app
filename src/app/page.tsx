@@ -76,6 +76,22 @@ export default async function Page() {
         <p className="t-body mt-6 max-w-[65ch] text-ink">{c.tiers.footnote}</p>
       </Section>
 
+      {/* --- Other services ------------------------------------------------ */}
+      <Section tone="deep">
+        <h2 className="t-h2 text-center text-white">{c.services.title}</h2>
+
+        <div className="mt-10 grid gap-x-12 gap-y-10 md:grid-cols-2">
+          {c.services.items.map((service, index) => (
+            <Reveal key={`${service.title}-${index}`} delay={index * 80}>
+              <h3 className="t-h3 inline-block rounded-[12px] bg-teal-100 px-6 py-3 text-ink">
+                {service.title}
+              </h3>
+              <p className="t-body mt-4 max-w-[52ch] text-white">{service.body}</p>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
       {/* --- Why trust us -------------------------------------------------- */}
       <Section tone="white">
         <div className="grid gap-10 md:grid-cols-2 md:gap-14">

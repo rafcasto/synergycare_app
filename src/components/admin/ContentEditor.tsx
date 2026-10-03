@@ -6,13 +6,14 @@ import { Plus, Trash2 } from "lucide-react";
 import type { Faq, Pair, SiteContent, TierRow } from "@/lib/content";
 import { Panel } from "./AdminUI";
 
-type Section = "hero" | "problem" | "how" | "tiers" | "trust" | "card" | "form" | "faq" | "footer" | "seo";
+type Section = "hero" | "problem" | "how" | "tiers" | "services" | "trust" | "card" | "form" | "faq" | "footer" | "seo";
 
 const SECTIONS: { id: Section; label: string; blurb: string }[] = [
   { id: "hero", label: "Hero", blurb: "The first thing a visitor reads, including both A/B headlines." },
   { id: "problem", label: "Sounds familiar?", blurb: "The three recognisable moments, and the brand thesis." },
   { id: "how", label: "How it works", blurb: "The three steps and the coverage note." },
   { id: "tiers", label: "Packages", blurb: "The package comparison table. Deliberately no prices." },
+  { id: "services", label: "Other services", blurb: "Extra services shown under the packages, such as transport and mobility aids." },
   { id: "trust", label: "Why trust us", blurb: "Founder story and how-we-work promises." },
   { id: "card", label: "Membership card", blurb: "The cross-border healthcare headline and tagline around the card. Upload the card artwork under Images." },
   { id: "form", label: "Registration form", blurb: "Form headings, privacy note and the thank-you screen." },
@@ -240,6 +241,28 @@ export default function ContentEditor({
                 value={content.tiers.footnote}
                 onChange={(v) => patch("tiers", { footnote: v })}
                 multiline
+              />
+            </Fields>
+          )}
+
+          {section === "services" && (
+            <Fields>
+              <Text
+                label="Section title"
+                value={content.services.title}
+                onChange={(v) => patch("services", { title: v })}
+              />
+              <ListEditor<Pair>
+                label="Services"
+                items={content.services.items}
+                blank={{ title: "", body: "" }}
+                onChange={(items) => patch("services", { items })}
+                render={(service, update) => (
+                  <>
+                    <Text label="Service name" value={service.title} onChange={(v) => update({ title: v })} />
+                    <Text label="Description" value={service.body} onChange={(v) => update({ body: v })} multiline />
+                  </>
+                )}
               />
             </Fields>
           )}
