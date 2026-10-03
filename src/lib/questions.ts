@@ -87,11 +87,11 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q7_commitment",
-    label: "We're starting with a small paid founding group. Interested?",
+    label:
+      "Talk to us and get a free Personalised Healthcare Plan for your parents. The call costs nothing, and there's no obligation.",
     options: [
-      { value: "yes", label: "Yes — count me in" },
-      { value: "maybe", label: "Maybe — tell me more" },
-      { value: "updates", label: "Just keep me updated" },
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
     ],
   },
 ];
