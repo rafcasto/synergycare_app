@@ -6,6 +6,7 @@ import Hero from "@/components/Hero";
 import EoiForm from "@/components/EoiForm";
 import PackageTable from "@/components/PackageTable";
 import CardSection from "@/components/CardSection";
+import FormattedText from "@/components/FormattedText";
 
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "rafael@digitalpathways.io";
 
@@ -163,7 +164,7 @@ export default async function Page() {
               <summary className="t-h3 cursor-pointer list-none text-ink marker:content-none">
                 {faq.q}
               </summary>
-              <p className="t-body mt-3 max-w-[65ch] text-gray-600">{faq.a}</p>
+              <FormattedText text={faq.a} className="t-body mt-3 max-w-[65ch] text-gray-600" />
             </details>
           ))}
         </div>

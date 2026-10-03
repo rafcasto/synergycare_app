@@ -351,7 +351,13 @@ export default function ContentEditor({
                 render={(faq, update) => (
                   <>
                     <Text label="Question" value={faq.q} onChange={(v) => update({ q: v })} />
-                    <Text label="Answer" value={faq.a} onChange={(v) => update({ a: v })} multiline />
+                    <Text
+                      label="Answer"
+                      hint="Leave a blank line to start a new paragraph. Start a line with “-” for a bullet point, or “1.” for a numbered list."
+                      value={faq.a}
+                      onChange={(v) => update({ a: v })}
+                      multiline
+                    />
                   </>
                 )}
               />
