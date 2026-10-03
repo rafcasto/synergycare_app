@@ -54,9 +54,9 @@ export default async function DashboardPage() {
           tone={s.qualityGateMet ? "good" : "warn"}
         />
         <Stat
-          label="Want the paid pilot"
+          label="Want a free call"
           value={s.foundingYes}
-          hint="Answered “Yes — count me in”"
+          hint="Answered “Yes” to the free call"
         />
       </div>
 
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
           emphasise={["emergency", "both"]}
         />
         <BarList
-          title="Interest in the paid founding group"
+          title="Wants a free call"
           data={s.distributions.q7_commitment}
           emphasise={["yes"]}
         />

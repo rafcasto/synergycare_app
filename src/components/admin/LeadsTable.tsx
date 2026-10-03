@@ -121,7 +121,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
         <table className="w-full min-w-[760px] border-collapse text-left">
           <thead>
             <tr className="border-b border-gray-300">
-              {["", "Name", "Email", "Parents live", "Would pay", "Founding group", "Registered"].map(
+              {["", "Name", "Email", "Parents live", "Would pay", "Wants a call", "Registered"].map(
                 (h) => (
                   <th key={h} className="t-small px-4 py-3 font-medium text-gray-600">
                     {h}
