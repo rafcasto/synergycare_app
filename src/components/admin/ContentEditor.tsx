@@ -6,14 +6,16 @@ import { Plus, Trash2 } from "lucide-react";
 import type { Faq, Pair, Service, SiteContent } from "@/lib/content";
 import { Panel } from "./AdminUI";
 
-type Section = "hero" | "problem" | "how" | "pricing" | "trust" | "form" | "faq" | "footer" | "seo";
+type Section = "hero" | "problem" | "how" | "pricing" | "services" | "trust" | "card" | "form" | "faq" | "footer" | "seo";
 
 const SECTIONS: { id: Section; label: string; blurb: string }[] = [
   { id: "hero", label: "Hero", blurb: "The first thing a visitor reads, including both A/B headlines." },
   { id: "problem", label: "Sounds familiar?", blurb: "The three recognisable moments, and the brand thesis." },
   { id: "how", label: "How it works", blurb: "The three steps and the coverage note." },
   { id: "pricing", label: "Pricing", blurb: "The two ways to care: membership and pay as you go." },
+  { id: "services", label: "Other services", blurb: "Extra services shown under the packages, such as transport and mobility aids." },
   { id: "trust", label: "Why trust us", blurb: "Founder story and how-we-work promises." },
+  { id: "card", label: "Membership card", blurb: "The cross-border healthcare headline and tagline around the card. Upload the card artwork under Images." },
   { id: "form", label: "Registration form", blurb: "Form headings, privacy note and the thank-you screen." },
   { id: "faq", label: "Questions", blurb: "The FAQ list." },
   { id: "footer", label: "Footer", blurb: "Mission line and sign-off." },
@@ -257,6 +259,28 @@ export default function ContentEditor({
             </Fields>
           )}
 
+          {section === "services" && (
+            <Fields>
+              <Text
+                label="Section title"
+                value={content.services.title}
+                onChange={(v) => patch("services", { title: v })}
+              />
+              <ListEditor<Pair>
+                label="Services"
+                items={content.services.items}
+                blank={{ title: "", body: "" }}
+                onChange={(items) => patch("services", { items })}
+                render={(service, update) => (
+                  <>
+                    <Text label="Service name" value={service.title} onChange={(v) => update({ title: v })} />
+                    <Text label="Description" value={service.body} onChange={(v) => update({ body: v })} multiline />
+                  </>
+                )}
+              />
+            </Fields>
+          )}
+
           {section === "trust" && (
             <Fields>
               <Text label="Section title" value={content.trust.title} onChange={(v) => patch("trust", { title: v })} />
@@ -284,6 +308,29 @@ export default function ContentEditor({
                 value={content.trust.legal}
                 onChange={(v) => patch("trust", { legal: v })}
                 multiline
+              />
+            </Fields>
+          )}
+
+          {section === "card" && (
+            <Fields>
+              <Text
+                label="Headline"
+                value={content.card.title}
+                onChange={(v) => patch("card", { title: v })}
+                multiline
+              />
+              <Text
+                label="Tagline under the card"
+                value={content.card.tagline}
+                onChange={(v) => patch("card", { tagline: v })}
+                multiline
+              />
+              <Text
+                label="Card image description"
+                hint="Read aloud by screen readers, and shown if the image fails to load."
+                value={content.card.imageAlt}
+                onChange={(v) => patch("card", { imageAlt: v })}
               />
             </Fields>
           )}
@@ -318,7 +365,13 @@ export default function ContentEditor({
                 render={(faq, update) => (
                   <>
                     <Text label="Question" value={faq.q} onChange={(v) => update({ q: v })} />
-                    <Text label="Answer" value={faq.a} onChange={(v) => update({ a: v })} multiline />
+                    <Text
+                      label="Answer"
+                      hint="Leave a blank line to start a new paragraph. Start a line with “-” for a bullet point, or “1.” for a numbered list."
+                      value={faq.a}
+                      onChange={(v) => update({ a: v })}
+                      multiline
+                    />
                   </>
                 )}
               />

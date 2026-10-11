@@ -50,6 +50,7 @@ export type SiteContent = {
     };
     footnote: string;
   };
+  services: { title: string; items: Pair[] };
   trust: {
     title: string;
     founderStory: string[];
@@ -59,6 +60,7 @@ export type SiteContent = {
     howWeWork: string[];
     legal: string;
   };
+  card: { title: string; tagline: string; imageAlt: string };
   form: {
     badge: string;
     title: string;
@@ -173,6 +175,27 @@ export const DEFAULT_CONTENT: SiteContent = {
     },
     footnote: "Free to register. Founding families get priority access and founding pricing.",
   },
+  services: {
+    title: "Other Services",
+    items: [
+      {
+        title: "Transport",
+        body: "We can arrange reliable transport for your parents to and from healthcare appointments, with the cost conveniently billed to you in NZD.",
+      },
+      {
+        title: "Private Nurse / Caregiver",
+        body: "When your family needs additional help at home, we can arrange private nursing or caregiver support, including respite care.",
+      },
+      {
+        title: "Mobility Aids",
+        body: "When mobility becomes a challenge, we can help arrange essential equipment such as walking frames, wheelchairs, shower chairs and other mobility aids.",
+      },
+      {
+        title: "Monitoring Kit",
+        body: "Help your parents monitor their health at home with essential equipment such as blood pressure monitors, blood glucose monitoring devices, and nebulisation kits, with support on how to use the equipment appropriately and safely.",
+      },
+    ],
+  },
   trust: {
     title: "Why trust us",
     founderStory: [
@@ -190,6 +213,13 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
     legal:
       "SynergyCare is operated by a New Zealand registered company. We collect only what we need to contact you about SynergyCare, we never sell your data, and you can ask us to delete it at any time.",
+  },
+  card: {
+    title: "Get your cross-border healthcare for your parents back home!",
+    tagline:
+      "Say goodbye to multiple remittances, bank fees, and your parents' trips to the bank!",
+    imageAlt:
+      "A dark green SynergyCare membership card with the tagline “Love beyond borders”, showing two member names and a member ID.",
   },
   form: {
     badge: "Founding families",

@@ -28,6 +28,11 @@ export const MEDIA_SLUGS = {
   hero: { label: "Hero photo", width: 1600, note: "Shown beside the headline. Landscape works best." },
   og: { label: "Social share image", width: 1200, note: "Used when the page is shared. 1200x630 is ideal." },
   founder: { label: "Founder photo", width: 640, note: "Optional. Appears in the “Why trust us” section." },
+  card: {
+    label: "Membership card",
+    width: 1200,
+    note: "Shown in the cross-border healthcare section above the FAQ. Replaces the built-in card artwork.",
+  },
 } as const;
 
 export type MediaSlug = keyof typeof MEDIA_SLUGS;
@@ -94,7 +99,7 @@ export async function saveMedia(slug: MediaSlug, file: Buffer, editorEmail: stri
     });
 
   // The landing page reads the version to build a cache-busting URL.
-  if (slug === "hero" || slug === "founder" || slug === "og") {
+  if (slug === "hero" || slug === "founder" || slug === "og" || slug === "card") {
     await db().doc("site_content/landing").set({ [`${slug}_image_version`]: version }, { merge: true });
   }
 

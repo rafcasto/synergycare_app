@@ -25,6 +25,7 @@ function merge<T>(base: T, override: unknown): T {
 
 export type ResolvedContent = SiteContent & {
   heroImage: { url: string; version: string } | null;
+  cardImage: { url: string; version: string } | null;
 };
 
 /**
@@ -38,14 +39,16 @@ export async function getSiteContent(): Promise<ResolvedContent> {
     const content = merge(DEFAULT_CONTENT, data?.content);
 
     const heroVersion = typeof data?.hero_image_version === "string" ? data.hero_image_version : null;
+    const cardVersion = typeof data?.card_image_version === "string" ? data.card_image_version : null;
 
     return {
       ...content,
       heroImage: heroVersion ? { url: `/api/media/hero?v=${heroVersion}`, version: heroVersion } : null,
+      cardImage: cardVersion ? { url: `/api/media/card?v=${cardVersion}`, version: cardVersion } : null,
     };
   } catch (error) {
     console.error("[site-content] read failed, serving defaults:", error);
-    return { ...DEFAULT_CONTENT, heroImage: null };
+    return { ...DEFAULT_CONTENT, heroImage: null, cardImage: null };
   }
 }
 

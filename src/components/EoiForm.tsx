@@ -12,6 +12,9 @@ type Step = 1 | 2 | "done";
 type Answers = Partial<Record<QuestionId, string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Lenient on purpose: NZ, PH and international formats, with or without
+// spaces, dashes or a leading +. We just need enough digits to call back.
+const PHONE_RE = /^\+?[\d\s\-().]{7,}$/;
 
 export default function EoiForm({ content }: { content: SiteContent["form"] }) {
   const [step, setStep] = useState<Step>(1);
@@ -36,6 +39,7 @@ export default function EoiForm({ content }: { content: SiteContent["form"] }) {
     const next: Record<string, string> = {};
     if (!firstName.trim()) next.firstName = "Please tell us your first name.";
     if (!EMAIL_RE.test(email.trim())) next.email = "Please enter a valid email address.";
+    if (!PHONE_RE.test(mobile.trim())) next.mobile = "Please enter a valid mobile number.";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -141,8 +145,10 @@ export default function EoiForm({ content }: { content: SiteContent["form"] }) {
               type="tel"
               value={mobile}
               onChange={setMobile}
-              hint="For a personal follow-up — never spam. Optional."
+              error={errors.mobile}
+              hint="For a personal follow-up — never spam."
               autoComplete="tel"
+              required
             />
 
             <CtaButton type="button" onClick={goToStep2} full>
