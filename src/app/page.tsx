@@ -64,31 +64,117 @@ export default async function Page() {
         <p className="t-small mt-8 max-w-[65ch] text-gray-600">{c.how.note}</p>
       </Section>
 
-      {/* --- What's included ---------------------------------------------- */}
+      {/* --- Pricing ------------------------------------------------------ */}
       <Section tone="sampaguita">
-        <SectionTitle>{c.tiers.title}</SectionTitle>
-        <p className="t-body mt-3 max-w-[65ch] text-gray-600">{c.tiers.intro}</p>
+        <SectionTitle>{c.pricing.title}</SectionTitle>
+        <p className="t-body mt-3 max-w-[65ch] text-gray-600">{c.pricing.intro}</p>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {c.tiers.items.map((tier, index) => (
-            <Card key={`${tier.name}-${index}`} className="h-full">
-              <h3 className="t-h3 text-ink">{tier.name}</h3>
-              {tier.inherits && <p className="t-small mt-2 text-gray-600">{tier.inherits}</p>}
-              <ul className="mt-4 space-y-2">
-                {tier.features.map((item, i) => (
-                  <li key={`${item}-${i}`} className="t-body flex gap-2 text-ink">
-                    <span aria-hidden="true" style={{ color: "var(--color-teal-700)" }}>
-                      ·
+        <div className="mt-10 grid gap-6 md:grid-cols-2 md:items-stretch">
+          {/* Option 1 — membership */}
+          <Reveal className="relative flex">
+            {c.pricing.member.badge && (
+              <div className="absolute -top-3 left-6 z-10">
+                <Badge>{c.pricing.member.badge}</Badge>
+              </div>
+            )}
+            <div className="flex w-full flex-col rounded-[16px] bg-teal-700 p-8 text-white">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-teal-100">
+                {c.pricing.member.eyebrow}
+              </p>
+              <h3 className="t-h2 mt-2 text-white">{c.pricing.member.name}</h3>
+              <p className="t-body mt-3 text-teal-100">{c.pricing.member.description}</p>
+
+              <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+                {c.pricing.member.pricePrefix && (
+                  <span className="t-body text-teal-100">{c.pricing.member.pricePrefix}</span>
+                )}
+                <span className="t-display text-white">{c.pricing.member.price}</span>
+                {c.pricing.member.priceSuffix && (
+                  <span className="t-body text-teal-100">{c.pricing.member.priceSuffix}</span>
+                )}
+              </p>
+
+              <hr className="my-6 border-white/20" />
+
+              <p className="t-small font-semibold text-white">{c.pricing.member.includedTitle}</p>
+              <ul className="mt-4 space-y-3">
+                {c.pricing.member.features.map((item, i) => (
+                  <li key={`${item}-${i}`} className="t-body flex gap-3">
+                    <span aria-hidden="true" className="font-semibold text-gold-400">
+                      ✓
                     </span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-            </Card>
-          ))}
+
+              <div className="mt-auto pt-10">
+                <a
+                  href="#eoi-form"
+                  className="inline-flex min-h-[48px] w-full items-center justify-center rounded-[12px] bg-white px-6 py-3 text-[16px] font-semibold text-teal-700 transition-colors duration-200 ease-out hover:bg-teal-100"
+                >
+                  {c.pricing.member.ctaLabel}
+                </a>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Option 2 — pay as you go */}
+          <Reveal className="flex" delay={80}>
+            <div className="flex w-full flex-col rounded-[16px] border border-gray-300 bg-white p-8">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-gray-600">
+                {c.pricing.payg.eyebrow}
+              </p>
+              <h3 className="t-h2 mt-2" style={{ color: "var(--color-teal-700)" }}>
+                {c.pricing.payg.name}
+              </h3>
+              <p className="t-body mt-3 text-gray-600">{c.pricing.payg.description}</p>
+
+              <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+                <span className="t-display" style={{ color: "var(--color-teal-700)" }}>
+                  {c.pricing.payg.price}
+                </span>
+                {c.pricing.payg.priceSuffix && (
+                  <span className="t-body text-gray-600">{c.pricing.payg.priceSuffix}</span>
+                )}
+              </p>
+
+              <hr className="my-6 border-gray-300" />
+
+              <p className="t-small font-semibold text-ink">{c.pricing.payg.servicesTitle}</p>
+              <ul className="mt-2 divide-y divide-gray-300">
+                {c.pricing.payg.services.map((service, i) => (
+                  <li
+                    key={`${service.name}-${i}`}
+                    className="t-body flex items-baseline justify-between gap-4 py-3"
+                  >
+                    <span className="font-medium" style={{ color: "var(--color-teal-700)" }}>
+                      {service.name}
+                    </span>
+                    <span className="shrink-0 text-ink">{service.price}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {c.pricing.payg.note && (
+                <p className="t-small mt-6 text-gray-600">{c.pricing.payg.note}</p>
+              )}
+
+              <div className="mt-auto pt-8">
+                <a
+                  href="#eoi-form"
+                  className="inline-flex min-h-[48px] w-full items-center justify-center rounded-[12px] border-2 border-teal-700 bg-white px-6 py-3 text-[16px] font-semibold text-teal-700 transition-colors duration-200 ease-out hover:bg-teal-100"
+                >
+                  {c.pricing.payg.ctaLabel}
+                </a>
+              </div>
+            </div>
+          </Reveal>
         </div>
 
-        <p className="t-body mt-6 max-w-[65ch] text-ink">{c.tiers.footnote}</p>
+        {c.pricing.footnote && (
+          <p className="t-small mt-8 max-w-[65ch] text-gray-600">{c.pricing.footnote}</p>
+        )}
       </Section>
 
       {/* --- Why trust us -------------------------------------------------- */}

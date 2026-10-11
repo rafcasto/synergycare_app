@@ -3,16 +3,16 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
-import type { Faq, Pair, SiteContent, Tier } from "@/lib/content";
+import type { Faq, Pair, Service, SiteContent } from "@/lib/content";
 import { Panel } from "./AdminUI";
 
-type Section = "hero" | "problem" | "how" | "tiers" | "trust" | "form" | "faq" | "footer" | "seo";
+type Section = "hero" | "problem" | "how" | "pricing" | "trust" | "form" | "faq" | "footer" | "seo";
 
 const SECTIONS: { id: Section; label: string; blurb: string }[] = [
   { id: "hero", label: "Hero", blurb: "The first thing a visitor reads, including both A/B headlines." },
   { id: "problem", label: "Sounds familiar?", blurb: "The three recognisable moments, and the brand thesis." },
   { id: "how", label: "How it works", blurb: "The three steps and the coverage note." },
-  { id: "tiers", label: "Membership", blurb: "What each tier will include. Deliberately no prices." },
+  { id: "pricing", label: "Pricing", blurb: "The two ways to care: membership and pay as you go." },
   { id: "trust", label: "Why trust us", blurb: "Founder story and how-we-work promises." },
   { id: "form", label: "Registration form", blurb: "Form headings, privacy note and the thank-you screen." },
   { id: "faq", label: "Questions", blurb: "The FAQ list." },
@@ -44,6 +44,24 @@ export default function ContentEditor({
       setContent((prev) => ({ ...prev, [key]: { ...prev[key], ...value } }));
       setStatus("idle");
     },
+    []
+  );
+
+  const patchMember = useCallback(
+    (value: Partial<SiteContent["pricing"]["member"]>) =>
+      setContent((prev) => ({
+        ...prev,
+        pricing: { ...prev.pricing, member: { ...prev.pricing.member, ...value } },
+      })),
+    []
+  );
+
+  const patchPayg = useCallback(
+    (value: Partial<SiteContent["pricing"]["payg"]>) =>
+      setContent((prev) => ({
+        ...prev,
+        pricing: { ...prev.pricing, payg: { ...prev.pricing.payg, ...value } },
+      })),
     []
   );
 
@@ -188,36 +206,52 @@ export default function ContentEditor({
             </Fields>
           )}
 
-          {section === "tiers" && (
+          {section === "pricing" && (
             <Fields>
-              <Text label="Section title" value={content.tiers.title} onChange={(v) => patch("tiers", { title: v })} />
-              <Text label="Intro" value={content.tiers.intro} onChange={(v) => patch("tiers", { intro: v })} multiline />
-              <ListEditor<Tier>
-                label="Tiers"
-                items={content.tiers.items}
-                blank={{ name: "", inherits: "", features: [] }}
-                onChange={(items) => patch("tiers", { items })}
-                render={(tier, update) => (
-                  <>
-                    <Text label="Name" value={tier.name} onChange={(v) => update({ name: v })} />
-                    <Text
-                      label="Inherits line"
-                      hint="Optional, e.g. “Everything in Essentials, plus”."
-                      value={tier.inherits}
-                      onChange={(v) => update({ inherits: v })}
-                    />
-                    <StringList
-                      label="Features"
-                      items={tier.features}
-                      onChange={(features) => update({ features })}
-                    />
-                  </>
-                )}
-              />
+              <Text label="Section title" value={content.pricing.title} onChange={(v) => patch("pricing", { title: v })} />
+              <Text label="Intro" value={content.pricing.intro} onChange={(v) => patch("pricing", { intro: v })} multiline />
+
+              <Group title="Option 1 — membership">
+                <Text label="Badge" hint="Leave blank to hide it." value={content.pricing.member.badge} onChange={(v) => patchMember({ badge: v })} />
+                <Text label="Eyebrow" value={content.pricing.member.eyebrow} onChange={(v) => patchMember({ eyebrow: v })} />
+                <Text label="Name" value={content.pricing.member.name} onChange={(v) => patchMember({ name: v })} />
+                <Text label="Description" value={content.pricing.member.description} onChange={(v) => patchMember({ description: v })} multiline />
+                <Text label="Price prefix" hint="e.g. “From”. Leave blank to hide." value={content.pricing.member.pricePrefix} onChange={(v) => patchMember({ pricePrefix: v })} />
+                <Text label="Price" value={content.pricing.member.price} onChange={(v) => patchMember({ price: v })} />
+                <Text label="Price suffix" hint="e.g. “/ fortnight”." value={content.pricing.member.priceSuffix} onChange={(v) => patchMember({ priceSuffix: v })} />
+                <Text label="Included heading" value={content.pricing.member.includedTitle} onChange={(v) => patchMember({ includedTitle: v })} />
+                <StringList label="Included features" items={content.pricing.member.features} onChange={(features) => patchMember({ features })} />
+                <Text label="Button label" value={content.pricing.member.ctaLabel} onChange={(v) => patchMember({ ctaLabel: v })} />
+              </Group>
+
+              <Group title="Option 2 — pay as you go">
+                <Text label="Eyebrow" value={content.pricing.payg.eyebrow} onChange={(v) => patchPayg({ eyebrow: v })} />
+                <Text label="Name" value={content.pricing.payg.name} onChange={(v) => patchPayg({ name: v })} />
+                <Text label="Description" value={content.pricing.payg.description} onChange={(v) => patchPayg({ description: v })} multiline />
+                <Text label="Price" value={content.pricing.payg.price} onChange={(v) => patchPayg({ price: v })} />
+                <Text label="Price suffix" hint="e.g. “membership fee”." value={content.pricing.payg.priceSuffix} onChange={(v) => patchPayg({ priceSuffix: v })} />
+                <Text label="Services heading" value={content.pricing.payg.servicesTitle} onChange={(v) => patchPayg({ servicesTitle: v })} />
+                <ListEditor<Service>
+                  label="Services"
+                  items={content.pricing.payg.services}
+                  blank={{ name: "", price: "" }}
+                  onChange={(services) => patchPayg({ services })}
+                  render={(service, update) => (
+                    <>
+                      <Text label="Service" value={service.name} onChange={(v) => update({ name: v })} />
+                      <Text label="Price" hint="e.g. “$30 each” or “Test cost + $20”." value={service.price} onChange={(v) => update({ price: v })} />
+                    </>
+                  )}
+                />
+                <Text label="Members-only note" hint="Leave blank to hide it." value={content.pricing.payg.note} onChange={(v) => patchPayg({ note: v })} multiline />
+                <Text label="Button label" value={content.pricing.payg.ctaLabel} onChange={(v) => patchPayg({ ctaLabel: v })} />
+              </Group>
+
               <Text
                 label="Footnote"
-                value={content.tiers.footnote}
-                onChange={(v) => patch("tiers", { footnote: v })}
+                hint="Leave blank to hide it."
+                value={content.pricing.footnote}
+                onChange={(v) => patch("pricing", { footnote: v })}
                 multiline
               />
             </Fields>
@@ -376,6 +410,15 @@ export default function ContentEditor({
 
 function Fields({ children }: { children: React.ReactNode }) {
   return <div className="space-y-6">{children}</div>;
+}
+
+function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="rounded-[16px] border border-gray-300 p-4">
+      <legend className="t-small px-1 font-medium text-ink">{title}</legend>
+      <div className="space-y-4">{children}</div>
+    </fieldset>
+  );
 }
 
 function Text({

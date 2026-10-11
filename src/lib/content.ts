@@ -9,7 +9,7 @@
 
 export type Pair = { title: string; body: string };
 export type Faq = { q: string; a: string };
-export type Tier = { name: string; inherits: string; features: string[] };
+export type Service = { name: string; price: string };
 
 export type SiteContent = {
   hero: {
@@ -22,7 +22,34 @@ export type SiteContent = {
   };
   problem: { title: string; cards: Pair[]; thesis: string };
   how: { title: string; steps: Pair[]; note: string };
-  tiers: { title: string; intro: string; items: Tier[]; footnote: string };
+  pricing: {
+    title: string;
+    intro: string;
+    member: {
+      badge: string;
+      eyebrow: string;
+      name: string;
+      description: string;
+      pricePrefix: string;
+      price: string;
+      priceSuffix: string;
+      includedTitle: string;
+      features: string[];
+      ctaLabel: string;
+    };
+    payg: {
+      eyebrow: string;
+      name: string;
+      description: string;
+      price: string;
+      priceSuffix: string;
+      servicesTitle: string;
+      services: Service[];
+      note: string;
+      ctaLabel: string;
+    };
+    footnote: string;
+  };
   trust: {
     title: string;
     founderStory: string[];
@@ -100,43 +127,51 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
     note: "Works anywhere in the Philippines we can verify quality providers — we'll confirm coverage for your family's location when you register.",
   },
-  tiers: {
-    title: "What membership will include",
+  pricing: {
+    title: "Two ways to care for your parents",
     intro:
-      "SynergyCare is pre-launch. This is what we're building, shaped with our first founding families.",
-    items: [
-      {
-        name: "Essentials",
-        inherits: "",
-        features: [
-          "Dedicated care coordinator",
-          "Unlimited GP teleconsults for your parents",
-          "Medicine and lab coordination",
-          "Quarterly written health report",
-        ],
-      },
-      {
-        name: "Complete",
-        inherits: "Everything in Essentials, plus",
-        features: [
-          "Scheduled nurse home visits",
-          "Annual full lab panel",
-          "Medication management",
-          "Covers both parents",
-        ],
-      },
-      {
-        name: "Total Care",
-        inherits: "Everything in Complete, plus",
-        features: [
-          "Monthly visits",
-          "Chronic-condition monitoring",
-          "Hospital accompaniment",
-        ],
-      },
-    ],
-    footnote:
-      "Founding families help us set fair pricing — tell us what would work for you in the registration form.",
+      "Become a member for ongoing, coordinated care, or pay as you go and book one service at a time.",
+    member: {
+      badge: "Best for ongoing care",
+      eyebrow: "Option 1",
+      name: "Become a member",
+      description:
+        "A dedicated coordinator and a care routine for both parents, for one fortnightly fee.",
+      pricePrefix: "From",
+      price: "$39.99",
+      priceSuffix: "/ fortnight",
+      includedTitle: "Included in your membership",
+      features: [
+        "Dedicated Family Care Coordinator",
+        "Doctor and specialist visits, online or in person",
+        "Medication and pharmacy support",
+        "Laboratory tests, imaging and follow-ups",
+        "Appointment companions and transport",
+        "Digital Care Record, with care and progress notes",
+        "Care Package, Care Wallet and Overseas Care Card for your parents",
+      ],
+      ctaLabel: "Book a call with us",
+    },
+    payg: {
+      eyebrow: "Option 2",
+      name: "Pay as you go",
+      description:
+        "No membership fee. Book one service when your parents need it and pay only for that service.",
+      price: "$0",
+      priceSuffix: "membership fee",
+      servicesTitle: "Price per service, in NZD",
+      services: [
+        { name: "Online consultation, general doctor", price: "$30 each" },
+        { name: "Specialist consultation", price: "$55 each" },
+        { name: "Appointment companion", price: "$80 per visit" },
+        { name: "Laboratory tests", price: "Test cost + $20" },
+        { name: "Imaging and ultrasound", price: "Scan cost + $30" },
+        { name: "Medication and pharmacy", price: "Medicine cost + $10" },
+      ],
+      note: "A dedicated coordinator, Care Package, Care Wallet and Overseas Care Card are for members only.",
+      ctaLabel: "Book a single service",
+    },
+    footnote: "Free to register. Founding families get priority access and founding pricing.",
   },
   trust: {
     title: "Why trust us",
